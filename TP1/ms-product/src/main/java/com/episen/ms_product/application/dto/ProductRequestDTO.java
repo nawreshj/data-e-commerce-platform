@@ -1,12 +1,7 @@
 package com.episen.ms_product.application.dto;
 
 import java.math.BigDecimal;
-
 import com.episen.ms_product.domain.entity.ProductCategory;
-
-import jakarta.persistence.Column;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -32,26 +27,26 @@ import lombok.NoArgsConstructor;
 public class ProductRequestDTO {
     
     @NotBlank(message = "Le nom du produit ne peut pas être vide")
-    @Size(min = 2, max = 50, message = "Le nom du produit doit contenir entre 3 et 100 caractères")
+    @Size(min = 3, max = 100, message = "Le nom du produit doit contenir entre 3 et 100 caractères")
     private String name;
 
     @NotBlank(message = "La description du produit ne peut pas être vide")
-    @Size(min = 2, max = 50, message = "La description du produit doit contenir entre 10 et 500 caractères")
+    @Size(min = 10, max = 500, message = "La description du produit doit contenir entre 10 et 500 caractères")
     private String description;
 
     @NotNull(message = "Le prix du produit est obligatoire")
     @DecimalMin(value = "0.01", message = "Le prix doit être strictement supérieur à 0")
-    @Column(name = "price", nullable = false)
     private BigDecimal price;
 
     @NotNull(message = "Le stock est obligatoire")
     @Min(value = 0, message = "Le stock doit être supérieur ou égal à 0")
-    @Column(name = "stock", nullable = false)
     private Integer stock;
 
     @NotNull(message = "La catégorie est obligatoire (ELECTRONICS, BOOKS, FOOD, OTHER)")
-    @Enumerated(EnumType.STRING)
-    @Column(name = "category", nullable = false, length = 50)
     private ProductCategory category;
-    
+
+    private String imageUrl;
+
+    private Boolean active;
+
 }

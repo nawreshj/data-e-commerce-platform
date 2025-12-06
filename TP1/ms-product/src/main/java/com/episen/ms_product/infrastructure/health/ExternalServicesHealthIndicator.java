@@ -1,4 +1,4 @@
-package com.membership.users.infrastructure.health;
+package com.episen.ms_product.infrastructure.health;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.actuate.health.Health;
