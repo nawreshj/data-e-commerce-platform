@@ -1,5 +1,6 @@
 package com.episen.ms_product.domain.repository;
 
+import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -21,7 +22,22 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     Optional<Product> findById(Long id);
 
     /**
-     * Recherche un produit par nom (méthode de requête dérivée)
+     * Recherche un produit par nom (méthode de re quête dérivée)
      */
     Optional<Product> findByName(String name);
+
+    /**
+     * Filtrer les produits par catégorie (méthode de re quête dérivée)
+     */
+    List<Product> findByCategorie(String categorie);
+
+    /**
+     * Filtrer les produits par disponibilité (stock > 0) (méthode de re quête dérivée)
+     */
+    List<Product> findByStockGreaterThan(int stock);
+
+    /**
+     * Vérifie si un nom de produit existe déjà
+     */
+    boolean existsByName(String name);
 }
