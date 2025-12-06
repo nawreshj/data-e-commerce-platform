@@ -8,6 +8,7 @@ import com.episen.ms_product.application.dto.ProductRequestDTO;
 import com.episen.ms_product.application.dto.ProductResponseDTO;
 import com.episen.ms_product.application.mapper.ProductMapper;
 import com.episen.ms_product.domain.entity.Product;
+import com.episen.ms_product.domain.entity.ProductCategory;
 import com.episen.ms_product.domain.repository.ProductRepository;
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.MeterRegistry;
@@ -36,7 +37,7 @@ public class ProductService {
     private final MeterRegistry meterRegistry;
 
     /**
-     * Récupère tous les produits
+     * Lister tous les produits : Récupère tous les produits
      */
     public List<ProductResponseDTO> getAllProducts() {
         log.debug("Récupération de tous les produits");
@@ -51,7 +52,7 @@ public class ProductService {
     }
 
     /**
-     * Récupère un produit par son ID
+     * Détails d'un prouit : Récupère un produit par son ID
      */
     public ProductResponseDTO getProductById(Long id) {
         log.debug("Récupération du produit avec l'ID: {}", id);
@@ -65,7 +66,7 @@ public class ProductService {
     }
 
     /**
-     * Crée un nouveau produit
+     * Créer un produit : Crée un nouveau produit
      * (Pas besoin de faire +1 au stock car on créé un modle de produit : stock est à entrer par l'utilisateur)
      */
     @Transactional
@@ -95,7 +96,7 @@ public class ProductService {
     }
     
     /**
-     * Met à jour un produit existant
+     * Modifier un produit : Met à jour un produit existant
      */
     @Transactional
     public ProductResponseDTO updateProduct(Long id, ProductRequestDTO productRequestDTO) {
@@ -128,7 +129,7 @@ public class ProductService {
     }
 
     /**
-     * Supprime un produit
+     * Supprimer un produit
      */
     @Transactional
     public void deleteProduct(Long id) {
@@ -162,5 +163,49 @@ public class ProductService {
         return products.stream()
                 .map(productMapper::toDto)
                 .collect(Collectors.toList());
+    }
+
+    /**
+     * Filtrer par catégorie : Recherche des produits par catégorie
+     */
+    public List<ProductResponseDTO> filterProductByCategory(ProductCategory category) {
+        log.debug("Recherche de produit avec la catégorie: {}", category);
+
+        List<Product> products = productRepository.findByCategory(category);
+
+        log.info("Nombre de produits trouvés: {}", products.size());
+
+        return products.stream()
+                .map(productMapper::toDto)
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Recherche des produits en stock (stock > 0)
+     */
+    public List<ProductResponseDTO> searchAvailableProducts() {
+        log.debug("Recherche de produits en stock");
+
+        List<Product> products = productRepository.findByStockGreaterThan(0);
+
+        log.info("Nombre de produits trouvés: {}", products.size());
+
+        return products.stream()
+                .map(productMapper::toDto)
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Mettre à jour le stock d'un produit
+     */
+    @Transactional
+    public Product updateStock(Long id, int updatedStock){
+        log.debug("Modification du stock d'un produit");
+
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Product", "id", id));
+
+        product.setStock(updatedStock);
+        return productRepository.save(product);
     }
 }

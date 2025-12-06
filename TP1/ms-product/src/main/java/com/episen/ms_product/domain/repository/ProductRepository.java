@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import com.episen.ms_product.domain.entity.Product;
+import com.episen.ms_product.domain.entity.ProductCategory;
 
 /**
  * Repository pour l'entité Product.
@@ -23,7 +24,7 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     Optional<Product> findById(Long id);
 
     /**
-     * Recherche un produit par nom (méthode de re quête dérivée)
+     * Recherche un produit par nom (méthode de requête dérivée)
      */
     Optional<Product> findByName(String name);
     //Trop strict pour une recherche, créer une requete en plus pour la recherche.
@@ -37,7 +38,7 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     /**
      * Filtrer les produits par catégorie (méthode de re quête dérivée)
      */
-    List<Product> findByCategorie(String categorie);
+    List<Product> findByCategory(ProductCategory categorie);
 
     /**
      * Filtrer les produits par disponibilité (stock > 0) (méthode de re quête dérivée)
@@ -48,4 +49,5 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
      * Vérifie si un nom de produit existe déjà
      */
     boolean existsByName(String name);
+
 }
