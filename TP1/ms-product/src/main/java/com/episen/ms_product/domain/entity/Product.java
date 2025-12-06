@@ -60,7 +60,7 @@ public class Product {
     @Column(name = "image_url")
     private String imageUrl;
 
-    @Column(name = "active", nullable = false)
+    @Column(name = "active")
     private Boolean active = true;
 
     @CreationTimestamp
