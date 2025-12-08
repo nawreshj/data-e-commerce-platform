@@ -134,4 +134,60 @@ public class ProductController {
                 .created(location)
                 .body(createdProduct);
     }
+
+
+    /**
+     * PUT /api/v1/products/{id}
+     * Met à jour complètement un produit existant
+     * 
+     * @param id             L'identifiant du produit
+     * @param productRequestDTO Les nouvelles données du produit
+     * @return Le produit mis à jour avec code 200 OK
+     */
+    @Operation(summary = "Mettre à jour un produit", description = "Met à jour complètement les informations d'un produit existant")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Produit mis à jour avec succès", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ProductResponseDTO.class))),
+            @ApiResponse(responseCode = "400", description = "Données invalides", content = @Content),
+            @ApiResponse(responseCode = "404", description = "Produit non trouvé", content = @Content),
+            @ApiResponse(responseCode = "409", description = "Conflit avec un produit existant", content = @Content)
+    })
+    @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ProductResponseDTO> updateProduct(
+            @Parameter(description = "ID du produit", required = true)
+            @PathVariable Long id,
+            @Parameter(description = "Nouvelles données du produit", required = true)
+            @Valid
+            @RequestBody ProductRequestDTO productRequestDTO) {
+
+        log.info("PUT /api/v1/products/{} - Mise à jour du produit", id);
+
+        ProductResponseDTO updateProduct = productService.updateProduct(id, productRequestDTO);
+
+        return ResponseEntity.ok(updateProduct);
+    }
+
+    /**
+     * DELETE /api/v1/products/{id}
+     * Supprime un produit
+     * 
+     * @param id L'identifiant du produit
+     * @return Code 204 NO CONTENT
+     */
+    @Operation(summary = "Supprimer un produit", description = "Supprime définitivement un produit")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "Produit supprimé avec succès", content = @Content),
+            @ApiResponse(responseCode = "404", description = "Produit non trouvé", content = @Content)
+    })
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteProduct(
+            @Parameter(description = "ID du produit", required = true) @PathVariable Long id) {
+
+        log.info("DELETE /api/v1/products/{} - Suppression du produit", id);
+
+        productService.deleteProduct(id);
+
+        // Best practice REST : 204 No Content pour une suppression réussie
+        return ResponseEntity.noContent().build();
+    }
+
 }
