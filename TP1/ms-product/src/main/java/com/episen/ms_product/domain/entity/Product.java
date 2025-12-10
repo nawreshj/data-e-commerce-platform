@@ -44,7 +44,7 @@ public class Product {
 
     @NotNull(message = "Le prix du produit est obligatoire")
     @DecimalMin(value = "0.01", message = "Le prix doit être strictement supérieur à 0")
-    @Column(name = "price", nullable = false)
+    @Column(name = "price", nullable = false, scale = 2)
     private BigDecimal price;
 
     @NotNull(message = "Le stock est obligatoire")

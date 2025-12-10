@@ -198,14 +198,16 @@ public class ProductService {
     /**
      * Mettre à jour le stock d'un produit
      */
-    @Transactional
-    public Product updateStock(Long id, int updatedStock){
-        log.debug("Modification du stock d'un produit");
+        @Transactional
+        public ProductResponseDTO updateStock(Long id, Integer newStock) {
+                log.debug("Modification du stock du produit {}", id);
 
-        Product product = productRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Product", "id", id));
+                Product product = productRepository.findById(id)
+                                .orElseThrow(() -> new ResourceNotFoundException("Product", "id", id));
 
-        product.setStock(updatedStock);
-        return productRepository.save(product);
-    }
+                product.setStock(newStock);
+                Product savedProduct = productRepository.save(product);
+
+                return productMapper.toDto(savedProduct);
+        }
 }

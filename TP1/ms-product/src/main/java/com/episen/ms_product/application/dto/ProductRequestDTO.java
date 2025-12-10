@@ -3,6 +3,7 @@ package com.episen.ms_product.application.dto;
 import java.math.BigDecimal;
 import com.episen.ms_product.domain.entity.ProductCategory;
 import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -36,6 +37,7 @@ public class ProductRequestDTO {
 
     @NotNull(message = "Le prix du produit est obligatoire")
     @DecimalMin(value = "0.01", message = "Le prix doit être strictement supérieur à 0")
+    @Digits(integer = 6, fraction = 2, message = "Le prix ne doit pas avoir plus de 2 décimales")
     private BigDecimal price;
 
     @NotNull(message = "Le stock est obligatoire")
