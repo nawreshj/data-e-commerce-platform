@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
  */
 @Data
 @NoArgsConstructor
-@AllArgsConstructors
+@AllArgsConstructor
 @Builder
 public class UpdateOrderStatusRequestDto {
 
