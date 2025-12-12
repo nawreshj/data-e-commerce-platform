@@ -275,4 +275,3 @@ Créer un dossier `architecture/` contenant :
 
 ---
 
-commit test 
