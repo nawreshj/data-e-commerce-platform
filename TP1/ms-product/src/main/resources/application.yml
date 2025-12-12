@@ -1,7 +1,7 @@
 
 spring:
   application:
-    name: users
+    name: products
     version: 1.0.0
 
   # Configuration H2 Database
@@ -29,7 +29,7 @@ spring:
 
 # Configuration du serveur
 server:
-  port: ${APP_PORT:8081}
+  port: ${APP_PORT:8082}
   #servlet:
   #  context-path: /users/api
   error:
@@ -128,4 +128,3 @@ logging:
   pattern:
     console: "%d{yyyy-MM-dd HH:mm:ss} - %logger{36} - %msg%n"
     file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
-

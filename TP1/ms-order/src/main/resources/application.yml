@@ -1,17 +1,16 @@
-
 spring:
   application:
-    name: users
+    name: orders
     version: 1.0.0
 
-  # Configuration H2 Database
+  # BDD H2 en mémoire pour ms-order
   datasource:
-    url: jdbc:h2:mem:userdb
+    url: jdbc:h2:mem:orderdb
     driver-class-name: org.h2.Driver
     username: sa
-    password: 
-  
-# Configuration JPA
+    password:
+
+  # Configuration JPA / Hibernate
   jpa:
     database-platform: org.hibernate.dialect.H2Dialect
     hibernate:
@@ -20,8 +19,8 @@ spring:
     properties:
       hibernate:
         format_sql: true
-  
-  # Console H2 activée pour le développement
+
+  # Console H2 activée pour le dev
   h2:
     console:
       enabled: true
@@ -29,9 +28,7 @@ spring:
 
 # Configuration du serveur
 server:
-  port: ${APP_PORT:8081}
-  #servlet:
-  #  context-path: /users/api
+  port: ${APP_PORT:8083}
   error:
     include-message: always
     include-binding-errors: always
@@ -41,24 +38,21 @@ server:
     enabled: true
     mime-types: application/json,application/xml,text/html,text/xml,text/plain
 
-# Configuration Actuator
+# Configuration Actuator / health / métriques
 management:
-  # Exposition des endpoints
   endpoints:
     web:
       exposure:
         include: health,info,metrics,prometheus,env,loggers
       base-path: /actuator
-  
-  # Configuration du Health Check
+
   endpoint:
     health:
       show-details: always
       show-components: always
       probes:
-        enabled: true # Pour Kubernetes liveness et readiness
-  
-  # Health indicators détaillés
+        enabled: true   # readiness / liveness
+
   health:
     defaults:
       enabled: true
@@ -69,8 +63,7 @@ management:
       enabled: true
     ping:
       enabled: true
-  
-  # Configuration des métriques
+
   metrics:
     enable:
       jvm: true
@@ -85,14 +78,12 @@ management:
     tags:
       application: ${spring.application.name}
       environment: dev
-  
-  # Configuration Prometheus
+
   prometheus:
     metrics:
       export:
         enabled: true
-  
-  # Informations de l'application (endpoint /actuator/info)
+
   info:
     env:
       enabled: true
@@ -104,11 +95,11 @@ management:
       enabled: true
       mode: full
 
-# Informations personnalisées pour /actuator/info
+# Informations /actuator/info
 info:
   app:
     name: ${spring.application.name}
-    description: Application de démonstration des best practices Spring Boot
+    description: Microservice commandes
     version: ${spring.application.version}
     encoding: @project.build.sourceEncoding@
     java:
@@ -117,11 +108,11 @@ info:
     email: support@esipen.com
     team: Architecture Team
 
-# Configuration des logs
+# Logs détaillés (comme le prof, mais pour ton package)
 logging:
   level:
     root: INFO
-    com.users: DEBUG
+    com.episen.order: DEBUG
     org.springframework.web: DEBUG
     org.hibernate.SQL: DEBUG
     org.hibernate.type.descriptor.sql.BasicBinder: TRACE
@@ -129,3 +120,13 @@ logging:
     console: "%d{yyyy-MM-dd HH:mm:ss} - %logger{36} - %msg%n"
     file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
 
+# Client REST ms-product pour vérifier le stock et récupérer nom + prix unitaire
+# (config utilisée par ProductClient via @Value)
+app:
+  clients:
+    user:
+      base-url: http://localhost:8081
+      actuator-url: http://localhost:8081/actuator/health
+    product:
+      base-url: http://localhost:8082
+      actuator-url: http://localhost:8082/actuator/health
