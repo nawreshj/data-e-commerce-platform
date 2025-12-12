@@ -1,0 +1,30 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Dashboard</title>
+  <link rel="stylesheet" href="../styles/base.css" />
+  <link rel="stylesheet" href="../styles/layout.css" />
+  <link rel="stylesheet" href="../styles/table.css" />
+</head>
+<body>
+  <div id="navbar"></div>
+  <div class="container">
+    <h1>Dashboard</h1>
+    <div class="card">
+      <div>TP1 plateforme E-commerce demo.</div>
+      <ol>
+        <li>Create user</li>
+        <li>Create products</li>
+        <li>Create order</li>
+        <li>Check health checks (monitoring)</li>
+      </ol>
+      <div class="small">
+        Front calls only <code>/api/*</code> (Node proxy), proxy calls 8081/8082/8083.
+      </div>
+    </div>
+  </div>
+  <div id="toast" class="toast"></div>
+  <script type="module" src="../scripts/dashboard.js"></script>
+</body>
+</html>
