@@ -14,6 +14,7 @@ spring:
 # Configuration JPA
   jpa:
     database-platform: org.hibernate.dialect.H2Dialect
+    defer-datasource-initialization: true
     hibernate:
       ddl-auto: create-drop
     show-sql: true
