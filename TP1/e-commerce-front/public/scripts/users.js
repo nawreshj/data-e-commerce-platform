@@ -11,10 +11,19 @@ function setError(msg) {
 
 async function loadUsers() {
   const users = await membershipApi.list();
+
   $("table").innerHTML =
-    `<tr><th>ID</th><th>Name</th><th>Email</th></tr>` +
+    `<tr><th>ID</th><th>First name</th><th>Last name</th><th>Email</th></tr>` +
     users
-      .map((u) => `<tr><td>${u.id}</td><td>${u.name}</td><td>${u.email}</td></tr>`)
+      .map(
+        (u) =>
+          `<tr>
+            <td>${u.id}</td>
+            <td>${u.firstName ?? ""}</td>
+            <td>${u.lastName ?? ""}</td>
+            <td>${u.email ?? ""}</td>
+          </tr>`
+      )
       .join("");
 }
 
@@ -22,7 +31,11 @@ $("userForm").addEventListener("submit", async (e) => {
   e.preventDefault();
   try {
     setError("");
-    await membershipApi.create({ name: $("name").value, email: $("email").value });
+    await membershipApi.create({
+      firstName: $("firstName").value,
+      lastName: $("lastName").value,
+      email: $("email").value,
+    });
     showToast("User created");
     e.target.reset();
     await loadUsers();
