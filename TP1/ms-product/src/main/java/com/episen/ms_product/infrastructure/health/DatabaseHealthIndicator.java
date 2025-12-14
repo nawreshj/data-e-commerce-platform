@@ -34,7 +34,7 @@ public class DatabaseHealthIndicator implements HealthIndicator {
             return Health.up()
                     .withDetail("database", "H2")
                     .withDetail("status", "Connection OK")
-                    .withDetail("totalUsers", 
+                    .withDetail("totalProducts", 
                             productCount)
                     .build();
                     
