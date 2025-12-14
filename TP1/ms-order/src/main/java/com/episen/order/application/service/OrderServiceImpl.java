@@ -241,7 +241,7 @@ public OrderResponseDto getOrderById(Long id) {
             throw new IllegalArgumentException("Statut invalide : " + request.getStatus());
         }
 
-        // ✅ garder l'ancien statut pour la métrique
+        // garder l'ancien statut pour la métrique
         OrderStatus oldStatus = order.getStatus();
 
         // 4) Mise à jour
