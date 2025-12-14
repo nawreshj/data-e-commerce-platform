@@ -12,21 +12,24 @@
   <div class="container">
     <h1>Orders</h1>
     <div class="small">
-      Create order calls order-service; it will validate user/products/stock via inter-service calls (as TP requires).
+      création des commandes
     </div>
 
     <div id="error" class="error"></div>
 
-    <h2>Create order (demo: 1 item)</h2>
-    <form id="orderForm" class="card">
-      <select id="o_user" required></select>
-      <textarea id="o_address" placeholder="shippingAddress" required></textarea>
-      <div class="row">
-        <select id="o_product" required></select>
-        <input id="o_qty" type="number" min="1" value="1" required />
-      </div>
-      <button>Create order</button>
+    <h2>Create order</h2>
+    <form id="orderForm">
+      <input id="o_user" type="number" placeholder="userId" required />
+    
+      <input id="o_address" type="text" placeholder="shipping address" required />
+      <div id="itemsContainer"></div>
+    
+      <button type="button" id="addItemBtn">+ Add product</button>
+      <button type="submit">Create order</button>
+    
+      <div id="error"></div>
     </form>
+    
 
     <h2>List</h2>
     <table id="table" class="table"></table>

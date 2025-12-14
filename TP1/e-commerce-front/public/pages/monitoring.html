@@ -2,36 +2,66 @@
 <html>
 <head>
   <meta charset="utf-8" />
-  <title>Orders</title>
+  <title>Monitoring</title>
   <link rel="stylesheet" href="../styles/base.css" />
   <link rel="stylesheet" href="../styles/layout.css" />
   <link rel="stylesheet" href="../styles/table.css" />
 </head>
 <body>
   <div id="navbar"></div>
+
   <div class="container">
-    <h1>Orders</h1>
-    <div class="small">
-      Create order calls order-service; it will validate user/products/stock via inter-service calls (as TP requires).
+    <h1>Monitoring</h1>
+
+    <!-- HEALTH CHECK -->
+    <h2>Health checks</h2>
+    <div class="card">
+      <button id="refresh">Refresh health</button>
+      <div id="health" style="margin-top:10px;"></div>
     </div>
 
-    <div id="error" class="error"></div>
+    <!-- DIRECT LINKS -->
+    <h2>Services & Monitoring links</h2>
+    <div class="card">
+      <table class="table">
+        <tr>
+          <th>Service</th>
+          <th>Health</th>
+          <th>Metrics</th>
+        </tr>
+        <tr>
+          <td>Membership</td>
+          <td><a href="http://localhost:8081/actuator/health" target="_blank">/actuator/health</a></td>
+          <td><a href="http://localhost:8081/actuator/prometheus" target="_blank">/actuator/prometheus</a></td>
+        </tr>
+        <tr>
+          <td>Product</td>
+          <td><a href="http://localhost:8082/actuator/health" target="_blank">/actuator/health</a></td>
+          <td><a href="http://localhost:8082/actuator/prometheus" target="_blank">/actuator/prometheus</a></td>
+        </tr>
+        <tr>
+          <td>Order</td>
+          <td><a href="http://localhost:8083/actuator/health" target="_blank">/actuator/health</a></td>
+          <td><a href="http://localhost:8083/actuator/prometheus" target="_blank">/actuator/prometheus</a></td>
+        </tr>
+      </table>
+    </div>
 
-    <h2>Create order (demo: 1 item)</h2>
-    <form id="orderForm" class="card">
-      <select id="o_user" required></select>
-      <textarea id="o_address" placeholder="shippingAddress" required></textarea>
+    <!-- PROMETHEUS / GRAFANA -->
+    <h2>Monitoring tools</h2>
+    <div class="card">
       <div class="row">
-        <select id="o_product" required></select>
-        <input id="o_qty" type="number" min="1" value="1" required />
+        <a href="http://localhost:9090" target="_blank"><button type="button">Open Prometheus</button></a>
+        <a href="http://localhost:3000" target="_blank"><button type="button">Open Grafana</button></a>
       </div>
-      <button>Create order</button>
-    </form>
-
-    <h2>List</h2>
-    <table id="table" class="table"></table>
+      <div class="small">
+        Grafana default login: <b>admin / tporchestration</b>
+      </div>
+    </div>
   </div>
+
   <div id="toast" class="toast"></div>
-  <script type="module" src="../scripts/orders.js"></script>
+
+  <script type="module" src="../scripts/monitoring.js"></script>
 </body>
 </html>

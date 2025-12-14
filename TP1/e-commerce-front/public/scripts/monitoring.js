@@ -1,8 +1,9 @@
 import { renderNavbar } from "../components/navbar.js";
-import { setHTML } from "../components/dom.js";
+import { setHTML, setText, $ } from "../components/dom.js";
 import { showToast } from "../components/toast.js";
 import { monitoringApi } from "../api/monitoringApi.js";
 
+console.log("monitoring.js loaded");
 setHTML("navbar", renderNavbar("monitoring"));
 
 function statusDot(status) {
