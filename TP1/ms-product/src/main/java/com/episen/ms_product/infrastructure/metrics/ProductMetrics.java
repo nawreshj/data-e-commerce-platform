@@ -14,25 +14,47 @@ import lombok.extern.slf4j.Slf4j;
  * Centralise les métriques Micrometer liées aux produits.
  * Objectif :
  * - Counters business (création, changement de statut)
- * - Gauge : montant total des commandes du jour
  */
 @Slf4j
 @Component
 public class ProductMetrics {
 
-    private final MeterRegistry meterRegistry;
     private final ProductRepository productRepository;
 
-        private final ZoneId zoneId = ZoneId.of("Europe/Paris");
+    private static final int LOW_STOCK_THRESHOLD = 5;
 
-    // valeur exposée par la Gauge
-    private volatile double amountToday = 0.0;
-
-    public ProductMetrics(MeterRegistry meterRegistry,
-                        ProductRepository productRepository) {
-
-        this.meterRegistry = meterRegistry;
+    public ProductMetrics(MeterRegistry meterRegistry, ProductRepository productRepository) {
         this.productRepository = productRepository;
+
+        /**
+         * Compteur du nombre total de produits
+         */
+        Gauge.builder("products.count", productRepository, ProductRepository::count)
+                .description("Nombre total de produits")
+                .register(meterRegistry);
+
+        /**
+         * Compteur nombre de produits actifs
+         */
+        Gauge.builder("products.active.count", productRepository, ProductRepository::countByActiveTrue)
+                .description("Nombre de produits actifs")
+                .register(meterRegistry);
+
+        /**
+         * Nombre de produits en rupture de stock
+         */
+        Gauge.builder("products.out_of_stock.count", productRepository, repo -> repo.countByStock(0))
+                .description("Nombre de produits en rupture de stock (stock=0)")
+                .register(meterRegistry);
+
+        /**
+         * Nombre de produits bientôt épuisés
+         */
+        Gauge.builder("products.low_stock.count", productRepository,
+                repo -> repo.countByStockLessThan(LOW_STOCK_THRESHOLD))
+                .description("Nombre de produits en stock faible (stock < seuil)")
+                .register(meterRegistry);
+
+        log.info("ProductMetrics gauges registered (low stock threshold={})", LOW_STOCK_THRESHOLD);
     }
-    
 }

@@ -50,4 +50,10 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
      */
     boolean existsByName(String name);
 
+    long countByStock(int stock);
+
+    long countByStockLessThan(int threshold);
+
+    long countByActiveTrue();
+
 }
