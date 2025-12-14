@@ -241,7 +241,7 @@ public OrderResponseDto getOrderById(Long id) {
             throw new IllegalArgumentException("Statut invalide : " + request.getStatus());
         }
 
-        // ✅ garder l'ancien statut pour la métrique
+        // garder l'ancien statut pour la métrique
         OrderStatus oldStatus = order.getStatus();
 
         // 4) Mise à jour
@@ -250,7 +250,7 @@ public OrderResponseDto getOrderById(Long id) {
         // 5) Sauvegarde
         Order savedOrder = orderRepository.save(order);
 
-        // ✅ métrique : changement de statut (old -> new)
+        // métrique : changement de statut (old -> new)
         orderMetrics.incrementOrderStatusChanged(oldStatus, newStatus);
 
         // 6) Mapping
