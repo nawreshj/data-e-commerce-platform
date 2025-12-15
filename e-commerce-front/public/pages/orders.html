@@ -1,0 +1,40 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Orders</title>
+  <link rel="stylesheet" href="../styles/base.css" />
+  <link rel="stylesheet" href="../styles/layout.css" />
+  <link rel="stylesheet" href="../styles/table.css" />
+</head>
+<body>
+  <div id="navbar"></div>
+  <div class="container">
+    <h1>Orders</h1>
+    <div class="small">
+      création des commandes
+    </div>
+
+    <div id="error" class="error"></div>
+
+    <h2>Create order</h2>
+    <form id="orderForm">
+      <input id="o_user" type="number" placeholder="userId" required />
+    
+      <input id="o_address" type="text" placeholder="shipping address" required />
+      <div id="itemsContainer"></div>
+    
+      <button type="button" id="addItemBtn">+ Add product</button>
+      <button type="submit">Create order</button>
+    
+      <div id="error"></div>
+    </form>
+    
+
+    <h2>List</h2>
+    <table id="table" class="table"></table>
+  </div>
+  <div id="toast" class="toast"></div>
+  <script type="module" src="../scripts/orders.js"></script>
+</body>
+</html>

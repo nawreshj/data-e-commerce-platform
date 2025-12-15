@@ -1,0 +1,16 @@
+{
+    "name": "e-commerce-front-js",
+    "version": "1.0.0",
+    "main": "server.js",
+    "scripts": {
+        "dev": "nodemon server.js",
+        "start": "node server.js"
+    },
+    "dependencies": {
+        "axios": "^1.6.0",
+        "express": "^4.22.1"
+    },
+    "devDependencies": {
+        "nodemon": "^3.0.0"
+    }
+}

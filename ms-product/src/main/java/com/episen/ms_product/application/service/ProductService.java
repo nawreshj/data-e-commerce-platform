@@ -28,13 +28,38 @@ import com.episen.ms_product.infrastructure.exception.ResourceNotFoundException;
  */
 @Slf4j
 @Service
-@RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class ProductService {
 
-    private final ProductRepository productRepository;
-    private final ProductMapper productMapper;
-    private final MeterRegistry meterRegistry;
+        private final ProductRepository productRepository;
+        private final ProductMapper productMapper;
+        private final MeterRegistry meterRegistry;
+        private final Counter createdCounter;
+        private final Counter deletedCounter;
+        private final Counter updatedCounter;
+
+    public ProductService(ProductRepository productRepository,
+                    ProductMapper productMapper,
+                    MeterRegistry meterRegistry) {
+        this.productRepository = productRepository;
+        this.productMapper = productMapper;
+        this.meterRegistry = meterRegistry;
+
+        this.createdCounter = Counter.builder("products.created")
+                            .description("Nombre de produits créés")
+                            .tag("type", "Product")
+                            .register(meterRegistry);
+
+        this.deletedCounter = Counter.builder("products.deleted")
+                            .description("Nombre de produits supprimés")
+                            .tag("type", "Product")
+                            .register(meterRegistry);
+
+        this.updatedCounter = Counter.builder("products.updated")
+                        .description("Nombre de produits mis à jour")
+                        .tag("type", "Product")
+                        .register(meterRegistry);
+    }
 
     /**
      * Lister tous les produits : Récupère tous les produits
@@ -84,11 +109,7 @@ public class ProductService {
         Product savedProduct = productRepository.save(product);
         
         // Métrique personnalisée : nombre de produits créés
-        Counter.builder("products.created")
-                .description("Nombre de produits créés")
-                .tag("type", "Product")
-                .register(meterRegistry)
-                .increment();
+        createdCounter.increment();
         
         log.info("Produit créé avec succès: ID={}, Nom={}", savedProduct.getId(), savedProduct.getName());
         
@@ -116,11 +137,7 @@ public class ProductService {
         Product updatedProduct = productRepository.save(product);
 
         // Métrique personnalisée
-        Counter.builder("products.updated")
-                .description("Nombre de produits mis à jour")
-                .tag("type", "product")
-                .register(meterRegistry)
-                .increment();
+        updatedCounter.increment();
 
         log.info("Produit mis à jour avec succès: ID={}, Name={}",
                 updatedProduct.getId(), updatedProduct.getName());
@@ -141,11 +158,7 @@ public class ProductService {
         productRepository.delete(product);
 
         // Métrique personnalisée
-        Counter.builder("products.deleted")
-                .description("Nombre de produits supprimés")
-                .tag("type", "product")
-                .register(meterRegistry)
-                .increment();
+        deletedCounter.increment();
 
         log.info("Produit supprimé avec succès: ID={}, Name={}", id, product.getName());
     }

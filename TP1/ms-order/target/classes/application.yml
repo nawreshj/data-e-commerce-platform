@@ -1,0 +1,132 @@
+spring:
+  application:
+    name: orders
+    version: 1.0.0
+
+  # BDD H2 en mémoire pour ms-order
+  datasource:
+    url: jdbc:h2:mem:orderdb
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+
+  # Configuration JPA / Hibernate
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
+  # Console H2 activée pour le dev
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+
+# Configuration du serveur
+server:
+  port: ${APP_PORT:8083}
+  error:
+    include-message: always
+    include-binding-errors: always
+    include-stacktrace: on_param
+    include-exception: false
+  compression:
+    enabled: true
+    mime-types: application/json,application/xml,text/html,text/xml,text/plain
+
+# Configuration Actuator / health / métriques
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus,env,loggers
+      base-path: /actuator
+
+  endpoint:
+    health:
+      show-details: always
+      show-components: always
+      probes:
+        enabled: true   # readiness / liveness
+
+  health:
+    defaults:
+      enabled: true
+    diskspace:
+      enabled: true
+      threshold: 10MB
+    db:
+      enabled: true
+    ping:
+      enabled: true
+
+  metrics:
+    enable:
+      jvm: true
+      process: true
+      system: true
+      tomcat: true
+      logback: true
+      http: true
+    distribution:
+      percentiles-histogram:
+        http.server.requests: true
+    tags:
+      application: ${spring.application.name}
+      environment: dev
+
+  prometheus:
+    metrics:
+      export:
+        enabled: true
+
+  info:
+    env:
+      enabled: true
+    java:
+      enabled: true
+    os:
+      enabled: true
+    git:
+      enabled: true
+      mode: full
+
+# Informations /actuator/info
+info:
+  app:
+    name: ${spring.application.name}
+    description: Microservice commandes
+    version: ${spring.application.version}
+    encoding: UTF-8
+    java:
+      version: 21.0.9
+  contact:
+    email: support@esipen.com
+    team: Architecture Team
+
+# Logs détaillés (comme le prof, mais pour ton package)
+logging:
+  level:
+    root: INFO
+    com.episen.order: DEBUG
+    org.springframework.web: DEBUG
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} - %logger{36} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+
+# Client REST ms-product pour vérifier le stock et récupérer nom + prix unitaire
+# (config utilisée par ProductClient via @Value)
+app:
+  clients:
+    user:
+      base-url: http://localhost:8081
+      actuator-url: http://localhost:8081/actuator/health
+    product:
+      base-url: http://localhost:8082
+      actuator-url: http://localhost:8082/actuator/health
