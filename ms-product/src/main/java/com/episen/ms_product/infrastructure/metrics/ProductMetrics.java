@@ -1,60 +1,58 @@
 package com.episen.ms_product.infrastructure.metrics;
 
-import java.time.ZoneId;
-
+import java.util.concurrent.atomic.AtomicLong;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-
 import com.episen.ms_product.domain.repository.ProductRepository;
-
 import io.micrometer.core.instrument.Gauge;
 import io.micrometer.core.instrument.MeterRegistry;
 import lombok.extern.slf4j.Slf4j;
 
-/**
- * Centralise les métriques Micrometer liées aux produits.
- * Objectif :
- * - Counters business (création, changement de statut)
- */
 @Slf4j
 @Component
 public class ProductMetrics {
 
-    private final ProductRepository productRepository;
+        private final ProductRepository productRepository;
+        private static final int LOW_STOCK_THRESHOLD = 5;
 
-    private static final int LOW_STOCK_THRESHOLD = 5;
+        private final AtomicLong totalCount = new AtomicLong(0);
+        private final AtomicLong activeCount = new AtomicLong(0);
+        private final AtomicLong outOfStockCount = new AtomicLong(0);
+        private final AtomicLong lowStockCount = new AtomicLong(0);
 
-    public ProductMetrics(MeterRegistry meterRegistry, ProductRepository productRepository) {
-        this.productRepository = productRepository;
+        public ProductMetrics(MeterRegistry meterRegistry, ProductRepository productRepository) {
+                this.productRepository = productRepository;
 
-        /**
-         * Compteur du nombre total de produits
-         */
-        Gauge.builder("products.count", productRepository, ProductRepository::count)
-                .description("Nombre total de produits")
-                .register(meterRegistry);
+                Gauge.builder("products.count", totalCount, AtomicLong::get)
+                                .description("Nombre total de produits")
+                                .register(meterRegistry);
 
-        /**
-         * Compteur nombre de produits actifs
-         */
-        Gauge.builder("products.active.count", productRepository, ProductRepository::countByActiveTrue)
-                .description("Nombre de produits actifs")
-                .register(meterRegistry);
+                Gauge.builder("products.active.count", activeCount, AtomicLong::get)
+                                .description("Nombre de produits actifs")
+                                .register(meterRegistry);
 
-        /**
-         * Nombre de produits en rupture de stock
-         */
-        Gauge.builder("products.out_of_stock.count", productRepository, repo -> repo.countByStock(0))
-                .description("Nombre de produits en rupture de stock (stock=0)")
-                .register(meterRegistry);
+                Gauge.builder("products.out_of_stock.count", outOfStockCount, AtomicLong::get)
+                                .description("Nombre de produits en rupture de stock")
+                                .register(meterRegistry);
 
-        /**
-         * Nombre de produits bientôt épuisés
-         */
-        Gauge.builder("products.low_stock.count", productRepository,
-                repo -> repo.countByStockLessThan(LOW_STOCK_THRESHOLD))
-                .description("Nombre de produits en stock faible (stock < seuil)")
-                .register(meterRegistry);
+                Gauge.builder("products.low_stock.count", lowStockCount, AtomicLong::get)
+                                .description("Nombre de produits en stock faible")
+                                .register(meterRegistry);
+                refreshMetrics();
+        }
 
-        log.info("ProductMetrics gauges registered (low stock threshold={})", LOW_STOCK_THRESHOLD);
-    }
+  
+        @Scheduled(fixedRate = 60000)
+        public void refreshMetrics() {
+                log.debug("Mise à jour des métriques produits...");
+
+                try {
+                        totalCount.set(productRepository.count());
+                        activeCount.set(productRepository.countByActiveTrue());
+                        outOfStockCount.set(productRepository.countByStock(0));
+                        lowStockCount.set(productRepository.countByStockLessThan(LOW_STOCK_THRESHOLD));
+                } catch (Exception e) {
+                        log.error("Erreur lors du rafraîchissement des métriques", e);
+                }
+        }
 }
