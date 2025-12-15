@@ -11,6 +11,8 @@ function statusDot(status) {
   return `<span style="display:inline-block;width:10px;height:10px;border-radius:999px;background:${color};margin-right:6px;"></span>`;
 }
 
+
+// health check (actuator) : vérifie l'état des microservices 
 async function loadHealth() {
   const data = await monitoringApi.health();
   const html = Object.entries(data)
