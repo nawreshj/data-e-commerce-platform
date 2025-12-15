@@ -190,13 +190,23 @@ public OrderResponseDto getOrderById(Long id) {
    @Override
     public List<OrderResponseDto> getOrdersByUser(Long userId) {
 
-        // (Optionnel) validation user existe via ms-user si tu veux
-        // userClient.getUserById(userId);
+        // 1) Vérifier que l’utilisateur existe (ms-user)
+        try {
+            userClient.getUserById(userId);
+        } catch (HttpClientErrorException e) {
+            if (e.getStatusCode() == HttpStatus.NOT_FOUND) {
+                throw new UserNotFoundException(userId);
+            }
+            throw new ServiceUnavailableException("USER_SERVICE");
+        } catch (RestClientException e) {
+            throw new ServiceUnavailableException("USER_SERVICE");
+        }
 
+        // 2) Récupérer les commandes
         List<Order> orders = orderRepository.findByUserId(userId);
 
         if (orders == null || orders.isEmpty()) {
-            return List.of(); //  jamais null
+            return List.of();
         }
 
         return orders.stream()

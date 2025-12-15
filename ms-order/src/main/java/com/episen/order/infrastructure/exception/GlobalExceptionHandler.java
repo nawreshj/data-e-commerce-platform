@@ -45,6 +45,7 @@ public class GlobalExceptionHandler {
                 .body("ORDER_NOT_FOUND : Commande introuvable");
     }
 
+
 @ExceptionHandler(OrderNotModifiableException.class)
     public ResponseEntity<String> handleOrderNotModifiable(OrderNotModifiableException ex) {
         return ResponseEntity
@@ -52,5 +53,10 @@ public class GlobalExceptionHandler {
                 .body("ORDER_NOT_MODIFIABLE : Commande non modifiable");
     }
 
-    
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<String> handleBadRequest(IllegalArgumentException ex) {
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body("BAD_REQUEST : " + ex.getMessage());
+    }
 }
