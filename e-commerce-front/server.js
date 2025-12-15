@@ -107,6 +107,11 @@ app.post("/api/orders", async (req, res) => {
   } catch (e) {
     const status = e.response?.status || 503;
     const data = e.response?.data || { code: "ORDER_SERVICE_UNAVAILABLE", message: "Order service down" };
+
+    if (typeof data === "string") {
+      return res.status(status).send(data);  
+    }
+
     res.status(status).json(data);
   }
 });

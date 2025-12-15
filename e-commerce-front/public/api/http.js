@@ -7,12 +7,30 @@ export async function request(url, { method = "GET", body } = {}) {
     }
   
     const res = await fetch(url, options);
-    const text = await res.text();
-    const data = text ? JSON.parse(text) : null;
+    const raw = await res.text();
+
+    const ct = res.headers.get("content-type") || "";
+    let data = raw;
   
-    if (!res.ok) {
-      throw new Error(data?.error || `HTTP ${res.status}`);
+
+    if (ct.includes("application/json") && raw) {
+      try {
+        data = JSON.parse(raw);
+      } catch {
+        data = raw; 
+      }
     }
+  
+// on vérife le formattage soit string soit json. String pour les gestions d'exception
+    if (!res.ok) {
+      const msg =
+        typeof data === "string"
+          ? data
+          : data?.message || data?.error || data?.code || JSON.stringify(data);
+  
+      throw new Error(msg || `HTTP ${res.status}`);
+    }
+  
     return data;
   }
   
