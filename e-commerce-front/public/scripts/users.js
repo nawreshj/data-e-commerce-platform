@@ -27,6 +27,8 @@ async function loadUsers() {
       .join("");
 }
 
+
+// gestion de la soumission du formulaire de création de client
 $("userForm").addEventListener("submit", async (e) => {
   e.preventDefault();
   try {

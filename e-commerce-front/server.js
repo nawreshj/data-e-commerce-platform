@@ -3,15 +3,14 @@ const axios = require("axios");
 const path = require("path");
 
 const app = express();
+
 app.use(express.json());
 app.use(express.static(path.join(__dirname, "public")));
-
-
 app.get("/", (req, res) => {
     res.redirect("/pages/dashboard.html");
   });
 
-// microservice base URL
+// microservice base URL (ports locaux)
 const API = {
   membership: "http://localhost:8081",
   product: "http://localhost:8082",
@@ -23,7 +22,7 @@ const API = {
    PROXY endpoints (/api/*)
    ========================= */
 
-// USERS (Membership)
+// Liste des users
 app.get("/api/users", async (req, res) => {
   try {
     const r = await axios.get(`${API.membership}/api/v1/users`);
@@ -33,6 +32,7 @@ app.get("/api/users", async (req, res) => {
   }
 });
 
+// création d'un user
 app.post("/api/users", async (req, res) => {
   try {
     const r = await axios.post(`${API.membership}/api/v1/users`, req.body);
@@ -42,7 +42,10 @@ app.post("/api/users", async (req, res) => {
   }
 });
 
-// PRODUCTS
+/*-------product --------*/
+
+
+// liste des produits
 app.get("/api/products", async (req, res) => {
   try {
     const r = await axios.get(`${API.product}/api/v1/products`);
@@ -52,6 +55,7 @@ app.get("/api/products", async (req, res) => {
   }
 });
 
+// création d'un produit
 app.post("/api/products", async (req, res) => {
   try {
     const r = await axios.post(`${API.product}/api/v1/products`, req.body);
@@ -61,6 +65,7 @@ app.post("/api/products", async (req, res) => {
   }
 });
 
+// màj d'un produit par id
 app.put("/api/products/:id", async (req, res) => {
   try {
     const r = await axios.put(`${API.product}/api/v1/products/${req.params.id}`, req.body);
@@ -70,6 +75,7 @@ app.put("/api/products/:id", async (req, res) => {
   }
 });
 
+// suppression d'un produit
 app.delete("/api/products/:id", async (req, res) => {
   try {
     await axios.delete(`${API.product}/api/v1/products/${req.params.id}`);
@@ -79,7 +85,10 @@ app.delete("/api/products/:id", async (req, res) => {
   }
 });
 
-// ORDERS
+/*----------Orders-----------*/ 
+
+
+// Liste des commandes
 app.get("/api/orders", async (req, res) => {
   try {
     const r = await axios.get(`${API.order}/api/v1/orders`);
@@ -89,6 +98,8 @@ app.get("/api/orders", async (req, res) => {
   }
 });
 
+
+// Création d'une commande
 app.post("/api/orders", async (req, res) => {
   try {
     const r = await axios.post(`${API.order}/api/v1/orders`, req.body);
@@ -98,6 +109,8 @@ app.post("/api/orders", async (req, res) => {
   }
 });
 
+
+// MàJ du statut d'un commande
 app.put("/api/orders/:id/status", async (req, res) => {
   try {
     const id = req.params.id;
@@ -120,6 +133,8 @@ app.put("/api/orders/:id/status", async (req, res) => {
     );
   }
 });
+
+// suprression / annulation d'une commande
 app.delete("/api/orders/:id", async (req, res) => {
   try {
     const r = await axios.delete(`${API.order}/api/v1/orders/${req.params.id}`);

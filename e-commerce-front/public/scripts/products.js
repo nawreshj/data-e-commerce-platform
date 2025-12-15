@@ -6,6 +6,8 @@ import { productApi } from "../api/productApi.js";
 
 setHTML("navbar", renderNavbar("products"));
 
+
+// affiche ou efface un message d'erreur
 function setError(msg) {
   setText("error", msg || "");
 }
@@ -14,6 +16,8 @@ function renderCategories() {
   $("p_category").innerHTML = PRODUCT_CATEGORIES.map((c) => `<option>${c}</option>`).join("");
 }
 
+
+// charge la liste des produits depuis l'api et génère le tabelau html
 async function loadProducts() {
   const data = await productApi.list();
   $("table").innerHTML =
@@ -46,6 +50,8 @@ async function loadProducts() {
       .join("");
 }
 
+
+// gestion de la soumission du formulaire de création de produit
 $("productForm").addEventListener("submit", async (e) => {
   e.preventDefault();
   try {
@@ -66,6 +72,7 @@ $("productForm").addEventListener("submit", async (e) => {
   }
 });
 
+// gestion des actions sur le tableau => suppression d'un produit, màj
 $("table").addEventListener("click", async (e) => {
   const delBtn = e.target.closest("button[data-del]");
   const saveBtn = e.target.closest("button[data-save]");
