@@ -21,5 +21,6 @@ com/episen/ms_product/infrastructure/exception/ErrorResponse$ValidationError$Val
 com/episen/ms_product/infrastructure/exception/ErrorResponse$ErrorResponseBuilder.class
 com/episen/ms_product/infrastructure/health/ExternalServicesHealthIndicator.class
 com/episen/ms_product/application/dto/StockUpdateDTO$StockUpdateDTOBuilder.class
+com/episen/ms_product/infrastructure/metrics/ProductMetrics.class
 com/episen/ms_product/domain/repository/ProductRepository.class
 com/episen/ms_product/application/dto/ProductResponseDTO.class

@@ -103,7 +103,7 @@ info:
     version: ${spring.application.version}
     encoding: UTF-8
     java:
-      version: 21.0.2
+      version: 25.0.1
   contact:
     email: support@esipen.com
     team: Architecture Team

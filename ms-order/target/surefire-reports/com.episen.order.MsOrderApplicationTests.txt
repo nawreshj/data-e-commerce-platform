@@ -1,4 +1,4 @@
 -------------------------------------------------------------------------------
 Test set: com.episen.order.MsOrderApplicationTests
 -------------------------------------------------------------------------------
-Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 3.661 s -- in com.episen.order.MsOrderApplicationTests
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 9.251 s -- in com.episen.order.MsOrderApplicationTests
