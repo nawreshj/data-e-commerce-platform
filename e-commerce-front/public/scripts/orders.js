@@ -1,5 +1,6 @@
 import { renderNavbar } from "../components/navbar.js";
 import { setHTML, setText, $ } from "../components/dom.js";
+import { ORDER_STATUSES } from "../constants/back.js";
 import { showToast } from "../components/toast.js";
 import { orderApi } from "../api/orderApi.js";
 
@@ -33,9 +34,14 @@ async function loadOrders() {
             <td>${Number(o.totalAmount).toFixed(2)}</td>
             <td>${o.shippingAddress}</td>
             <td>${renderItems(o)}</td>
-            <td class="actions">
+            <<td class="actions">
+              <select data-status="${o.id}" ${immutable ? "disabled" : ""}>
+                  ${ORDER_STATUSES.map((st) => `<option ${st === o.status ? "selected" : ""}>${st}</option>`).join("")}
+              </select>
+               <button data-update="${o.id}" ${immutable ? "disabled" : ""}>Update</button>
               <button data-cancel="${o.id}" ${immutable ? "disabled" : ""}>Cancel</button>
             </td>
+
           </tr>
         `;
       })
@@ -112,20 +118,33 @@ $("orderForm").addEventListener("submit", async (e) => {
   }
 });
 
-// Cancel
+// Cancel + Update status
 $("table").addEventListener("click", async (e) => {
   const cancelBtn = e.target.closest("button[data-cancel]");
-  if (!cancelBtn) return;
+  const updateBtn = e.target.closest("button[data-update]");
 
   try {
-    const id = cancelBtn.getAttribute("data-cancel");
-    await orderApi.cancel(id);
-    showToast("Order cancelled");
-    await loadOrders();
+    if (cancelBtn) {
+      const id = cancelBtn.getAttribute("data-cancel");
+      await orderApi.cancel(id);
+      showToast("Order cancelled");
+      await loadOrders();
+    }
+
+    if (updateBtn) {
+      const id = updateBtn.getAttribute("data-update");
+      const sel = document.querySelector(`select[data-status="${id}"]`);
+      const newStatus = sel?.value;
+      if (!newStatus) throw new Error("Select a status");
+      await orderApi.updateStatus(id, newStatus);
+      showToast("Status updated");
+      await loadOrders();
+    }
   } catch (err) {
-    setError(err.message || "Cancel failed");
+    setError(err.message || "Action failed");
   }
 });
+
 
 
 Promise.resolve()

@@ -100,13 +100,26 @@ app.post("/api/orders", async (req, res) => {
 
 app.put("/api/orders/:id/status", async (req, res) => {
   try {
-    const r = await axios.put(`${API.order}/api/v1/orders/${req.params.id}/status`, req.body);
+    const id = req.params.id;
+    const { status } = req.body;
+
+    if (!status) {
+      return res.status(400).json({ error: "Missing status field" });
+    }
+
+    const r = await axios.patch(
+      `${API.order}/api/v1/orders/${id}/status`,
+      { status }, 
+      { headers: { "Content-Type": "application/json" } }
+    );
+
     res.json(r.data);
   } catch (e) {
-    res.status(400).json({ error: "Order status update failed" });
+    res.status(e.response?.status || 400).json(
+      e.response?.data || { error: "Order status update failed" }
+    );
   }
 });
-
 app.delete("/api/orders/:id", async (req, res) => {
   try {
     const r = await axios.delete(`${API.order}/api/v1/orders/${req.params.id}`);
