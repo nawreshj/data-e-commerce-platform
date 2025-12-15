@@ -13,8 +13,15 @@ import com.episen.order.infrastructure.client.ProductClient;
 import com.episen.order.infrastructure.client.UserClient;
 import com.episen.order.application.dto.ProductDto;
 import com.episen.order.application.dto.UserDto;
+import com.episen.order.infrastructure.exception.UserNotFoundException;
+import com.episen.order.infrastructure.exception.ProductNotFoundException;
+import com.episen.order.infrastructure.exception.InsufficientStockException;
+import com.episen.order.infrastructure.exception.ServiceUnavailableException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import com.episen.order.infrastructure.exception.OrderNotFoundException;
+import com.episen.order.infrastructure.exception.OrderNotModifiableException;
+
 import com.episen.order.infrastructure.metrics.OrderMetrics;
 
 import com.episen.order.application.dto.UpdateOrderStatusRequestDto;
@@ -57,11 +64,11 @@ public class OrderServiceImpl implements OrderService {
             user = userClient.getUserById(request.getUserId());
         } catch (RestClientException ex) {
             log.error("Erreur lors de l'appel au service User pour userId={}", request.getUserId(), ex);
-            throw new IllegalStateException("Impossible de vérifier l'utilisateur (service User indisponible).", ex);
+            throw new ServiceUnavailableException("USER_SERVICE");
         }
 
         if (user == null) {
-            throw new IllegalArgumentException("Utilisateur introuvable pour id=" + request.getUserId());
+            throw new UserNotFoundException(request.getUserId());
         }
 
         // ─────────────────────────────────────────────
@@ -85,22 +92,18 @@ public class OrderServiceImpl implements OrderService {
     ProductDto product;
     try {
         product = productClient.getProductById(itemDto.getProductId());
-    } catch (RestClientException ex) {
+        } catch (RestClientException ex) {
         log.error("Erreur lors de l'appel au service Product pour productId={}", itemDto.getProductId(), ex);
-        throw new IllegalStateException("Impossible de vérifier le produit (service Product indisponible).", ex);
+        throw new ServiceUnavailableException("PRODUCT_SERVICE");
     }
 
     if (product == null) {
-        throw new IllegalArgumentException("Produit introuvable pour id=" + itemDto.getProductId());
+        throw new ProductNotFoundException(itemDto.getProductId());
     }
 
     // 4.2) Vérifier le stock disponible
     if (product.getStock() == null || product.getStock() < itemDto.getQuantity()) {
-        throw new IllegalArgumentException(
-                "Stock insuffisant pour le produit id=" + product.getId()
-                        + " (stock=" + product.getStock()
-                        + ", demandé=" + itemDto.getQuantity() + ")"
-        );
+        throw new InsufficientStockException(itemDto.getProductId());
     }
 
     // 4.3) Mapper le DTO -> entité OrderItem (mapper pauvre)
@@ -157,9 +160,7 @@ public class OrderServiceImpl implements OrderService {
 public OrderResponseDto getOrderById(Long id) {
 
     Order order = orderRepository.findById(id)
-            .orElseThrow(() ->
-                    new IllegalArgumentException("Commande introuvable pour id=" + id)
-            );
+            .orElseThrow(() -> new OrderNotFoundException(id));
 
     return orderMapper.toDto(order);
 }
@@ -226,11 +227,10 @@ public OrderResponseDto getOrderById(Long id) {
 
         // 1) Récupération
         Order order = orderRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Commande non trouvée avec id : " + id));
-
+                                    .orElseThrow(() -> new OrderNotFoundException(id));
         // 2) BUSINESS RULE : non modifiable
         if (order.getStatus() == OrderStatus.DELIVERED || order.getStatus() == OrderStatus.CANCELLED) {
-            throw new IllegalStateException("Impossible de modifier une commande " + order.getStatus());
+            throw new OrderNotModifiableException(order.getStatus());
         }
 
         // 3) Validation nouveau statut
@@ -263,9 +263,7 @@ public OrderResponseDto getOrderById(Long id) {
         // 1) Vérifier que la commande existe
         // ─────────────────────────────────────────────
         Order order = orderRepository.findById(id)
-                .orElseThrow(() ->
-                        new IllegalArgumentException("Commande non trouvée avec id : " + id)
-                );
+                .orElseThrow(() -> new OrderNotFoundException(id));
 
         // ─────────────────────────────────────────────
         // 2) BUSINESS RULE : une commande DELIVERED/CANCELLED ne peut plus être modifiée

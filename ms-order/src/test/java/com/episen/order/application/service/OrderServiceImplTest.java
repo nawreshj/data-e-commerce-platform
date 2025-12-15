@@ -3,7 +3,6 @@ package com.episen.order.application.service;
 import com.episen.order.application.dto.OrderRequestDto;
 import com.episen.order.application.dto.OrderResponseDto;
 import com.episen.order.application.dto.UpdateOrderStatusRequestDto;
-import com.episen.order.application.dto.UserDto;
 import com.episen.order.application.mapper.OrderItemMapper;
 import com.episen.order.application.mapper.OrderMapper;
 import com.episen.order.domain.entity.Order;
@@ -11,6 +10,7 @@ import com.episen.order.domain.enums.OrderStatus;
 import com.episen.order.domain.repository.OrderRepository;
 import com.episen.order.infrastructure.client.ProductClient;
 import com.episen.order.infrastructure.client.UserClient;
+import com.episen.order.infrastructure.exception.OrderNotModifiableException; // ✅ AJOUT
 import com.episen.order.infrastructure.metrics.OrderMetrics;
 
 import org.junit.jupiter.api.Test;
@@ -52,8 +52,8 @@ class OrderServiceImplTest {
         UpdateOrderStatusRequestDto req = new UpdateOrderStatusRequestDto();
         req.setStatus("PENDING");
 
-        // When + Then
-        assertThrows(IllegalStateException.class, () -> orderService.updateOrderStatus(1L, req));
+        // When + Then ✅ (exception mise à jour)
+        assertThrows(OrderNotModifiableException.class, () -> orderService.updateOrderStatus(1L, req));
 
         verify(orderRepository, never()).save(any());
         verify(orderMetrics, never()).incrementOrderStatusChanged(any(), any());
