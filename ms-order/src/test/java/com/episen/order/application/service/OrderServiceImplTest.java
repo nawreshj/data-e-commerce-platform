@@ -52,7 +52,7 @@ class OrderServiceImplTest {
         UpdateOrderStatusRequestDto req = new UpdateOrderStatusRequestDto();
         req.setStatus("PENDING");
 
-        // When + Then ✅ (exception mise à jour)
+        // When + Then 
         assertThrows(OrderNotModifiableException.class, () -> orderService.updateOrderStatus(1L, req));
 
         verify(orderRepository, never()).save(any());
@@ -111,7 +111,7 @@ class OrderServiceImplTest {
         verify(orderMetrics).incrementOrderStatusChanged(OrderStatus.PENDING, OrderStatus.DELIVERED);
     }
 
-    // (Optionnel si tu veux remplacer un des 3) : createOrder should throw if no items
+    // createOrder should throw if no items
     @Test
     void createOrder_shouldThrow_whenItemsEmpty() {
         OrderRequestDto req = new OrderRequestDto();
